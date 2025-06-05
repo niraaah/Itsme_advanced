@@ -1679,14 +1679,14 @@
         function toggleTermsAgreement(type) {
             if (type === 'all') {
                 const allChecked = document.getElementById('checkboxAll').checked;
-                termsAgreed.purchase = !allChecked;
-                termsAgreed.privacy = !allChecked;
-                termsAgreed.marketing = !allChecked;
+                termsAgreed.purchase = allChecked;
+                termsAgreed.privacy = allChecked;
+                termsAgreed.marketing = allChecked;
                 
-                document.getElementById('checkboxAll').checked = !allChecked;
-                document.getElementById('checkboxPurchase').checked = !allChecked;
-                document.getElementById('checkboxPrivacy').checked = !allChecked;
-                document.getElementById('checkboxMarketing').checked = !allChecked;
+                document.getElementById('checkboxAll').checked = allChecked;
+                document.getElementById('checkboxPurchase').checked = allChecked;
+                document.getElementById('checkboxPrivacy').checked = allChecked;
+                document.getElementById('checkboxMarketing').checked = allChecked;
             } else {
                 termsAgreed[type] = !termsAgreed[type];
                 document.getElementById('checkbox' + type.charAt(0).toUpperCase() + type.slice(1)).checked = termsAgreed[type];
