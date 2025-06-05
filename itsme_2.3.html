@@ -1,0 +1,2777 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>전북대 학식 앱</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .phone-container {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 6px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            border-radius: 34px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            background: #fff;
+            font-size: 17px;
+            font-weight: 600;
+        }
+        
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .status-right {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 16px;
+        }
+        
+        .screen {
+            display: none;
+            height: calc(100% - 44px);
+            overflow-y: auto;
+            background: #fff;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        .header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            position: relative;
+        }
+        
+        .header-icons {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 15px;
+        }
+        
+        .header-icon {
+            width: 24px;
+            height: 24px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        
+        .back-btn {
+            font-size: 18px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            line-height: 1.3;
+        }
+        
+        .header-subtitle {
+            font-size: 14px;
+            color: #999;
+        }
+        
+        .today-special {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 15px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .content {
+            padding: 0;
+        }
+        
+        .menu-list {
+            padding: 0 20px;
+        }
+        
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+        }
+        
+        .menu-left {
+            flex: 1;
+        }
+        
+        .menu-time {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .menu-badge {
+            background: #4CAF50;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 11px;
+            margin-left: 5px;
+        }
+        
+        .menu-name {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 2px;
+        }
+        
+        .menu-location {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .menu-right {
+            text-align: right;
+        }
+        
+        .menu-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #e74c3c;
+        }
+        
+        .menu-arrow {
+            color: #ccc;
+            margin-left: 10px;
+        }
+        
+        /* 혼잡도 화면 */
+        .congestion-screen {
+            padding: 20px;
+        }
+        
+        .calendar-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .calendar-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .calendar-date {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            border-radius: 8px;
+        }
+        
+        .calendar-day.today {
+            background: #333;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .congestion-info {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .congestion-level {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ff6b6b;
+            margin-bottom: 5px;
+        }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .menu-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 1px solid #f0f0f0;
+        }
+        
+        .menu-image {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(45deg, #ffeaa7, #fab1a0);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+        
+        .menu-card-content {
+            padding: 12px;
+        }
+        
+        .menu-card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .menu-card-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: #e74c3c;
+        }
+        
+        .order-section {
+            background: white;
+            border-top: 1px solid #f0f0f0;
+            padding: 20px;
+        }
+        
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #ddd;
+            border-radius: 50%;
+            background: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .quantity {
+            font-size: 18px;
+            font-weight: 600;
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        .total-price {
+            text-align: right;
+            margin-bottom: 15px;
+        }
+        
+        .total-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .total-amount {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .order-btn {
+            width: 100%;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        /* 알람 화면 (시계 스타일) */
+        .clock-screen {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 100%;
+        }
+        
+        .clock-time {
+            font-size: 80px;
+            font-weight: 300;
+            margin-bottom: 10px;
+            font-family: 'SF Pro Display', sans-serif;
+        }
+        
+        .clock-date {
+            font-size: 18px;
+            margin-bottom: 60px;
+            opacity: 0.9;
+        }
+        
+        .alarm-notification {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 0 30px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .notification-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .notification-text {
+            font-size: 16px;
+            line-height: 1.4;
+        }
+        
+        .clock-controls {
+            position: absolute;
+            bottom: 50px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+        }
+        
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .detail-menu-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .detail-menu-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .detail-menu-desc {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .detail-menu-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: #e74c3c;
+        }
+        
+        .navigation {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: white;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            padding: 10px;
+            color: #999;
+            transition: color 0.3s;
+            flex: 1;
+        }
+        
+        .nav-item.active {
+            color: #667eea;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .nav-text {
+            font-size: 11px;
+        }
+        
+        .allergy-button {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        /* 결제 방법 선택 버튼들 */
+        .payment-method {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-method.selected {
+            border-color: #ff6b6b;
+            background: #fff5f5;
+        }
+
+        .payment-method-icon {
+            font-size: 24px;
+            margin-right: 15px;
+        }
+
+        .payment-method-info {
+            flex: 1;
+        }
+
+        .payment-method-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .payment-method-desc {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .payment-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .payment-method.selected .payment-radio {
+            border-color: #ff6b6b;
+        }
+
+        .payment-method.selected .payment-radio::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            background: #ff6b6b;
+            border-radius: 50%;
+        }
+
+        /* 약관 동의 체크박스 */
+        .terms-checkbox {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #f0f0f0;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .terms-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            accent-color: #ff6b6b;
+        }
+
+        .terms-text {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .terms-link {
+            color: #ff6b6b;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        /* 결제 버튼 비활성화 스타일 */
+        /* 알림 센터 스타일 */
+        .notification-center {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #87CEEB 0%, #4682B4 50%, #2F4F4F 100%);
+            z-index: 2000;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+            color: white;
+            padding: 44px 20px 20px;
+            overflow-y: auto;
+        }
+
+        .notification-center.active {
+            transform: translateY(0);
+        }
+
+        .notification-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .notification-date {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .notification-time {
+            font-size: 80px;
+            font-weight: 300;
+            font-family: 'SF Pro Display', sans-serif;
+        }
+
+        .notification-content {
+            flex: 1;
+            margin-bottom: 40px;
+        }
+
+        .notification-section {
+            margin-bottom: 30px;
+        }
+
+        .notification-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .notification-item {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .notification-item:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .notification-icon {
+            flex-shrink: 0;
+        }
+
+        .notification-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notification-app {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            opacity: 0.9;
+        }
+
+        .notification-text {
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 6px;
+        }
+
+        .notification-time-small {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            opacity: 0.7;
+            cursor: pointer;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .notification-close:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .notification-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+        }
+
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* 홈 인디케이터 바 */
+        .home-indicator {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 134px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .home-indicator:hover {
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .home-indicator:active {
+            background: rgba(255, 255, 255, 1);
+            transform: translateX(-50%) scale(0.95);
+        }
+
+        /* 오늘의 메뉴 화면 스타일 */
+        .today-menu-category {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .category-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .category-number {
+            color: #333;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .category-name {
+            flex: 1;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .category-status {
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .category-status.open {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .category-status.closed {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .category-menu {
+            padding: 0;
+        }
+
+        .menu-item-today {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #f8f9fa;
+            position: relative;
+        }
+
+        .menu-item-today:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item-today.featured {
+            background: linear-gradient(135deg, #fff5f5, #fef5e7);
+        }
+
+        .menu-name {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .menu-price {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ff6b6b;
+            margin-right: 10px;
+        }
+
+        .menu-badge {
+            background: #ff6b6b;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="phone-screen">
+            <!-- 상태바 -->
+            <div class="status-bar" onclick="toggleNotificationCenter()">
+                <div class="status-left">
+                    <span id="currentTime">12:31</span>
+                </div>
+                <div class="status-right">
+                    <span>📶</span>
+                    <span>🛜</span>
+                    <span>🔋</span>
+                </div>
+            </div>
+            
+            <!-- 알림 센터 -->
+            <div class="notification-center" id="notificationCenter">
+                <div class="notification-header">
+                    <div class="notification-date">6월 5일 목요일</div>
+                    <div class="notification-time">1:34</div>
+                </div>
+                
+                <div class="notification-content">
+                    <div class="notification-section">
+                        <div class="notification-title">알림 센터</div>
+                        
+                        <div class="notification-item" onclick="openTodayMenu()">
+                            <div class="notification-icon">
+                                <div class="app-icon" style="background: white; border-radius: 8px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                    <img src="./itsme_logo.png" alt="잇츠미 앱 아이콘" style="width: 24px; height: 24px;">
+                                </div>
+                            </div>
+                            <div class="notification-body">
+                                <div class="notification-app">전북대 학식 앱</div>
+                                <div class="notification-text">오늘의 특식을 확인해보세요!<br>왕새우튀김들깨장밥*계란후라이</div>
+                                <div class="notification-time-small">어제 오후 9:54</div>
+                            </div>
+                            <button class="notification-close" onclick="event.stopPropagation(); closeNotification(this)">×</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="notification-controls">
+                    <button class="control-btn">💡</button>
+                    <button class="control-btn">📷</button>
+                </div>
+                
+                <!-- 인디케이터 바 -->
+                <div class="home-indicator" onclick="closeNotificationCenter()"></div>
+            </div>
+            
+            <!-- 메인 메뉴 리스트 화면 -->
+            <div class="screen active" id="mainScreen">
+                <div class="header">
+                    <div class="back-btn">‹</div>
+                    <div class="header-title">전북대 후생관 식당<br>코너를 선택해주세요!</div>
+                    <div class="header-icons">
+                        <div class="header-icon" onclick="showCouponScreen()">🎫</div>
+                        <div class="header-icon" onclick="showOrderHistoryScreen()">📋</div>
+                    </div>
+                </div>
+                
+                <div class="content">
+                    <div class="menu-list">
+                        <div class="menu-item" onclick="showCategoryMenu('조식/석식🍚')">
+                            <div class="menu-left">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                                    <span style="color: #333; font-size: 16px; font-weight: 600;">①</span>
+                                    <span style="font-size: 16px; font-weight: 600;">조식/석식🍚</span>
+                                    <span style="background: #e74c3c; color: white; padding: 2px 6px; border-radius: 10px; font-size: 11px;">영업마감</span>
+                                </div>
+                                <div style="display: flex; gap: 10px; margin-top: 8px; font-size: 12px;">
+                                    <span style="background: #e3f2fd; color: #1976d2; padding: 2px 6px; border-radius: 8px;">🎫 사용 142장</span>
+                                    <span style="background: #f3e5f5; color: #7b1fa2; padding: 2px 6px; border-radius: 8px;">💳 구매 180장</span>
+                                </div>
+                            </div>
+                            <div class="menu-right">
+                                <span class="menu-arrow">›</span>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item" onclick="showCategoryMenu('찌개/돌솥🍲')">
+                            <div class="menu-left">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                                    <span style="color: #333; font-size: 16px; font-weight: 600;">②</span>
+                                    <span style="font-size: 16px; font-weight: 600;">찌개/돌솥🍲</span>
+                                    <span style="background: #4CAF50; color: white; padding: 2px 6px; border-radius: 10px; font-size: 11px;">영업중</span>
+                                </div>
+                                <div style="display: flex; gap: 10px; margin-top: 8px; font-size: 12px;">
+                                    <span style="background: #e3f2fd; color: #1976d2; padding: 2px 6px; border-radius: 8px;">🎫 사용 89장</span>
+                                    <span style="background: #f3e5f5; color: #7b1fa2; padding: 2px 6px; border-radius: 8px;">💳 구매 120장</span>
+                                </div>
+                            </div>
+                            <div class="menu-right">
+                                <span class="menu-arrow">›</span>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item" onclick="showCategoryMenu('한식🍚')">
+                            <div class="menu-left">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                                    <span style="color: #333; font-size: 16px; font-weight: 600;">④</span>
+                                    <span style="font-size: 16px; font-weight: 600;">한식🍚</span>
+                                    <span style="background: #4CAF50; color: white; padding: 2px 6px; border-radius: 10px; font-size: 11px;">영업중</span>
+                                </div>
+                                <div style="display: flex; gap: 10px; margin-top: 8px; font-size: 12px;">
+                                    <span style="background: #e3f2fd; color: #1976d2; padding: 2px 6px; border-radius: 8px;">🎫 사용 234장</span>
+                                    <span style="background: #f3e5f5; color: #7b1fa2; padding: 2px 6px; border-radius: 8px;">💳 구매 280장</span>
+                                </div>
+                            </div>
+                            <div class="menu-right">
+                                <span class="menu-arrow">›</span>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item" onclick="showCategoryMenu('양식🍝 - 오므라이스')">
+                            <div class="menu-left">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                                    <span style="color: #333; font-size: 16px; font-weight: 600;">⑤</span>
+                                    <span style="font-size: 16px; font-weight: 600;">양식🍝 - 오므라이스</span>
+                                    <span style="background: #4CAF50; color: white; padding: 2px 6px; border-radius: 10px; font-size: 11px;">영업중</span>
+                                </div>
+                                <div style="display: flex; gap: 10px; margin-top: 8px; font-size: 12px;">
+                                    <span style="background: #e3f2fd; color: #1976d2; padding: 2px 6px; border-radius: 8px;">🎫 사용 76장</span>
+                                    <span style="background: #f3e5f5; color: #7b1fa2; padding: 2px 6px; border-radius: 8px;">💳 구매 95장</span>
+                                </div>
+                            </div>
+                            <div class="menu-right">
+                                <span class="menu-arrow">›</span>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item" onclick="showCategoryMenu('양식🍝 - 돈까스')">
+                            <div class="menu-left">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                                    <span style="color: #333; font-size: 16px; font-weight: 600;">⑤</span>
+                                    <span style="font-size: 16px; font-weight: 600;">양식🍝 - 돈까스</span>
+                                    <span style="background: #4CAF50; color: white; padding: 2px 6px; border-radius: 10px; font-size: 11px;">영업중</span>
+                                </div>
+                                <div style="display: flex; gap: 10px; margin-top: 8px; font-size: 12px;">
+                                    <span style="background: #e3f2fd; color: #1976d2; padding: 2px 6px; border-radius: 8px;">🎫 사용 156장</span>
+                                    <span style="background: #f3e5f5; color: #7b1fa2; padding: 2px 6px; border-radius: 8px;">💳 구매 190장</span>
+                                </div>
+                            </div>
+                            <div class="menu-right">
+                                <span class="menu-arrow">›</span>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item" onclick="showCategoryMenu('분식🍜')">
+                            <div class="menu-left">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                                    <span style="color: #333; font-size: 16px; font-weight: 600;">⑥</span>
+                                    <span style="font-size: 16px; font-weight: 600;">분식🍜</span>
+                                    <span style="background: #4CAF50; color: white; padding: 2px 6px; border-radius: 10px; font-size: 11px;">영업중</span>
+                                </div>
+                                <div style="display: flex; gap: 10px; margin-top: 8px; font-size: 12px;">
+                                    <span style="background: #e3f2fd; color: #1976d2; padding: 2px 6px; border-radius: 8px;">🎫 사용 198장</span>
+                                    <span style="background: #f3e5f5; color: #7b1fa2; padding: 2px 6px; border-radius: 8px;">💳 구매 220장</span>
+                                </div>
+                            </div>
+                            <div class="menu-right">
+                                <span class="menu-arrow">›</span>
+                            </div>
+                        </div>
+                        
+                        <div class="menu-item" onclick="showCategoryMenu('라면・샐러드🥗')">
+                            <div class="menu-left">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                                    <span style="color: #333; font-size: 16px; font-weight: 600;">⑦</span>
+                                    <span style="font-size: 16px; font-weight: 600;">라면・샐러드🥗</span>
+                                    <span style="background: #4CAF50; color: white; padding: 2px 6px; border-radius: 10px; font-size: 11px;">영업중</span>
+                                </div>
+                                <div style="display: flex; gap: 10px; margin-top: 8px; font-size: 12px;">
+                                    <span style="background: #e3f2fd; color: #1976d2; padding: 2px 6px; border-radius: 8px;">🎫 사용 134장</span>
+                                    <span style="background: #f3e5f5; color: #7b1fa2; padding: 2px 6px; border-radius: 8px;">💳 구매 160장</span>
+                                </div>
+                            </div>
+                            <div class="menu-right">
+                                <span class="menu-arrow">›</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 오늘의 전체 메뉴 보기 버튼 -->
+                        <div style="text-align: center; margin: 30px 20px 15px 20px;">
+                            <button onclick="openTodayMenu()" style="
+                                background: none; 
+                                border: none; 
+                                color: #667eea; 
+                                font-size: 16px; 
+                                font-weight: 600; 
+                                cursor: pointer; 
+                                text-decoration: underline;
+                                padding: 10px 0;
+                                transition: color 0.3s ease;
+                            " onmouseover="this.style.color='#5a67d8'" onmouseout="this.style.color='#667eea'">
+                                📋 오늘의 전체 메뉴 보기
+                            </button>
+                        </div>
+                        
+                        <!-- 알러지 설정 버튼 -->
+                        <div class="allergy-button" onclick="showAllergyScreen()">
+                            <div style="font-size: 18px; margin-bottom: 10px;">🚫</div>
+                            <div style="font-weight: 600; color: #856404;">알러지 정보 설정</div>
+                            <div style="font-size: 14px; color: #856404; margin-top: 5px;">
+                                안전한 식사를 위해 알러지 정보를 등록하세요
+                                <div id="allergyStatus" style="margin-top: 5px; font-size: 12px; color: #666;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 교환권/쿠폰 화면 -->
+            <div class="screen" id="couponScreen">
+                <div class="header">
+                    <div class="back-btn" onclick="goBack()">‹</div>
+                    <div class="header-title">교환권/쿠폰</div>
+                </div>
+                
+                <div style="padding: 20px; padding-bottom: 40px;">
+                    <div style="display: flex; margin-bottom: 30px;">
+                        <div id="couponTab1" style="flex: 1; text-align: center; padding: 15px; border-bottom: 3px solid #333; font-size: 16px; font-weight: 600; cursor: pointer;" onclick="switchCouponTab(1)">교환권</div>
+                        <div id="couponTab2" style="flex: 1; text-align: center; padding: 15px; border-bottom: 1px solid #f0f0f0; font-size: 16px; color: #999; cursor: pointer;" onclick="switchCouponTab(2)">쿠폰</div>
+                    </div>
+                    
+                    <div id="couponContent1">
+                        <div style="margin-bottom: 30px;">
+                            <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                                <div style="background: #333; color: white; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600;">사용가능</div>
+                                <div style="background: #f0f0f0; color: #666; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600;">기간만료</div>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 16px;">총 0개</span>
+                                <span style="font-size: 14px; color: #666;">🔄 오래된순</span>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center; padding: 80px 20px; color: #999;">
+                            <div style="font-size: 60px; margin-bottom: 20px; opacity: 0.3;">🎫</div>
+                            <div style="font-size: 16px;">보유한 교환권이 없습니다</div>
+                        </div>
+                    </div>
+                    
+                    <div id="couponContent2" style="display: none;">
+                        <div style="text-align: center; padding: 80px 20px; color: #999;">
+                            <div style="font-size: 60px; margin-bottom: 20px; opacity: 0.3;">🎟️</div>
+                            <div style="font-size: 16px;">보유한 쿠폰이 없습니다</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 주문 내역 화면 -->
+            <div class="screen" id="orderHistoryScreen">
+                <div class="header">
+                    <div class="back-btn" onclick="goBack()">‹</div>
+                    <div class="header-title">주문 내역</div>
+                </div>
+                
+                <div style="padding: 20px; padding-bottom: 40px;">
+                    <div style="display: flex; margin-bottom: 30px;">
+                        <div id="orderTab1" style="flex: 1; text-align: center; padding: 15px; border-bottom: 3px solid #333; font-size: 16px; font-weight: 600; cursor: pointer;" onclick="switchOrderTab(1)">진행중</div>
+                        <div id="orderTab2" style="flex: 1; text-align: center; padding: 15px; border-bottom: 1px solid #f0f0f0; font-size: 16px; color: #999; cursor: pointer;" onclick="switchOrderTab(2)">전체 내역</div>
+                    </div>
+                    
+                    <div id="orderContent1">
+                        <div style="text-align: center; padding: 80px 20px; color: #999;">
+                            <div style="font-size: 60px; margin-bottom: 20px; opacity: 0.3;">📋</div>
+                            <div style="font-size: 16px;">주문 현황이 없습니다.</div>
+                        </div>
+                    </div>
+                    
+                    <div id="orderContent2" style="display: none;">
+                        <div style="text-align: center; padding: 80px 20px; color: #999;">
+                            <div style="font-size: 60px; margin-bottom: 20px; opacity: 0.3;">📋</div>
+                            <div style="font-size: 16px;">주문 내역이 없습니다.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 혼잡도 화면 -->
+            <div class="screen" id="congestionScreen">
+                <div class="header">
+                    <div class="back-btn" onclick="showMainScreen()">‹</div>
+                    <div class="header-title">전북대 후생관 식당 (④한식🍚)</div>
+                    <div class="header-icons">
+                        <div class="header-icon" onclick="showCouponScreen()">🎫</div>
+                        <div class="header-icon" onclick="showOrderHistoryScreen()">📋</div>
+                    </div>
+                </div>
+                
+                <div class="congestion-screen">
+                    <div class="calendar-header">
+                        <div style="color: #ff6b6b; font-size: 16px; margin-bottom: 10px;">📅 6월 주간 메뉴</div>
+                    </div>
+                    
+                    <div class="week-calendar" style="display: flex; justify-content: space-between; margin-bottom: 20px; padding: 0 10px;">
+                        <div style="text-align: center; color: #999; font-size: 12px;">
+                            <div>일</div>
+                            <div style="margin-top: 5px; font-size: 18px;">1</div>
+                        </div>
+                        <div style="text-align: center; color: #999; font-size: 12px;">
+                            <div>월</div>
+                            <div style="margin-top: 5px; font-size: 18px;">2</div>
+                        </div>
+                        <div style="text-align: center; color: #999; font-size: 12px;">
+                            <div>화</div>
+                            <div style="margin-top: 5px; font-size: 18px;">3</div>
+                        </div>
+                        <div style="text-align: center; color: white; background: #333; border-radius: 50%; width: 40px; height: 40px; display: flex; flex-direction: column; justify-content: center; font-size: 12px;">
+                            <div>수</div>
+                            <div style="font-size: 14px; font-weight: 600;">4</div>
+                        </div>
+                        <div style="text-align: center; color: #999; font-size: 12px;">
+                            <div>목</div>
+                            <div style="margin-top: 5px; font-size: 18px;">5</div>
+                        </div>
+                        <div style="text-align: center; color: #999; font-size: 12px;">
+                            <div>금</div>
+                            <div style="margin-top: 5px; font-size: 18px;">6</div>
+                        </div>
+                        <div style="text-align: center; color: #999; font-size: 12px;">
+                            <div>토</div>
+                            <div style="margin-top: 5px; font-size: 18px;">7</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 혼잡도 정보 섹션 -->
+                    <div style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <div style="font-size: 18px; font-weight: 600;">현재 혼잡도</div>
+                            <div style="font-size: 12px; color: #666;">실시간 업데이트</div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                            <div style="flex: 1;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span style="font-size: 14px; color: #666;">현재 인원</span>
+                                    <span id="currentCongestion" style="font-size: 16px; font-weight: 600; color: #ff6b6b;">192/210</span>
+                                </div>
+                                <div style="background: #f0f0f0; height: 8px; border-radius: 4px; overflow: hidden;">
+                                    <div id="congestionBar" style="background: linear-gradient(90deg, #4CAF50 0%, #FFC107 50%, #ff6b6b 100%); height: 100%; width: 91%; transition: width 0.3s ease;"></div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 11px; color: #999;">
+                                    <span>여유</span>
+                                    <span>보통</span>
+                                    <span>혼잡</span>
+                                </div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div id="congestionLevel" style="font-size: 24px; font-weight: 700; color: #ff6b6b;">91%</div>
+                                <div style="font-size: 12px; color: #666;">혼잡</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 시간별 혼잡도 그래프 -->
+                        <div style="border-top: 1px solid #f0f0f0; padding-top: 15px;">
+                            <div style="font-size: 14px; font-weight: 600; margin-bottom: 15px; color: #333;">오늘 시간별 혼잡도</div>
+                            <div style="display: flex; align-items: end; justify-content: space-between; height: 80px; padding: 0 5px;">
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <div style="background: #4CAF50; width: 12px; height: 25px; border-radius: 2px; margin-bottom: 5px;"></div>
+                                    <span style="font-size: 10px; color: #666;">11:30</span>
+                                </div>
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <div style="background: #4CAF50; width: 12px; height: 35px; border-radius: 2px; margin-bottom: 5px;"></div>
+                                    <span style="font-size: 10px; color: #666;">12:00</span>
+                                </div>
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <div style="background: #FFC107; width: 12px; height: 55px; border-radius: 2px; margin-bottom: 5px;"></div>
+                                    <span style="font-size: 10px; color: #666;">12:30</span>
+                                </div>
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <div style="background: #ff6b6b; width: 12px; height: 75px; border-radius: 2px; margin-bottom: 5px;"></div>
+                                    <span style="font-size: 10px; color: #666; font-weight: 600;">13:00</span>
+                                </div>
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <div style="background: #FFC107; width: 12px; height: 45px; border-radius: 2px; margin-bottom: 5px;"></div>
+                                    <span style="font-size: 10px; color: #666;">13:30</span>
+                                </div>
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <div style="background: #4CAF50; width: 12px; height: 30px; border-radius: 2px; margin-bottom: 5px;"></div>
+                                    <span style="font-size: 10px; color: #666;">14:00</span>
+                                </div>
+                            </div>
+                            <div style="text-align: center; margin-top: 10px; font-size: 11px; color: #666;">
+                                🟢 여유 🟡 보통 🔴 혼잡
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="menuContainer">
+                        <!-- 메뉴들이 동적으로 여기에 추가됩니다 -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 장바구니 화면 -->
+            <div class="screen" id="cartScreen">
+                <div class="header">
+                    <div class="back-btn" onclick="showCongestionScreen()">‹</div>
+                    <div class="header-title">장바구니</div>
+                    <div style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); cursor: pointer;" onclick="showCongestionScreen()">×</div>
+                </div>
+                
+                <div style="padding: 20px; padding-bottom: 40px;">
+                    <div id="cartItems">
+                        <!-- 장바구니 아이템들이 여기에 동적으로 추가됩니다 -->
+                    </div>
+                    
+                    <div style="margin-top: 30px;">
+                        <div style="font-size: 18px; font-weight: 600; margin-bottom: 5px;">전북대 후생관 식당</div>
+                        <div style="font-size: 14px; color: #666;">후생관</div>
+                    </div>
+                    
+                    <div style="margin: 20px 0;">
+                        <div style="font-size: 16px; font-weight: 600; margin-bottom: 15px;">포인트 사용</div>
+                        <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; color: #999; font-size: 14px;">
+                            선택된 포인트 수단이 없습니다.
+                        </div>
+                    </div>
+                    
+                    <div style="border-top: 1px solid #f0f0f0; padding-top: 20px;">
+                        <div style="font-size: 16px; font-weight: 600; margin-bottom: 15px;">결제 금액</div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
+                            <span>[상품 금액] 장바구니에 담긴 상품 총 금액</span>
+                            <span id="cartSubtotal">0원</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px; color: #666;">
+                            <span>[적립] 후생관 식당 조합원 멤버십 1%적립(학생)</span>
+                            <span id="cartPoints">0P</span>
+                        </div>
+                        <div style="border-top: 1px solid #f0f0f0; padding-top: 15px; display: flex; justify-content: space-between; font-size: 18px; font-weight: 700;">
+                            <span>합계</span>
+                            <span id="cartTotal">0원</span>
+                        </div>
+                    </div>
+                    
+                    <button onclick="showPaymentScreen()" style="width: 100%; background: #ff6b6b; color: white; border: none; padding: 15px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px;">
+                        총 <span id="cartTotalBtn">0원</span> 결제하기
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 결제 화면 -->
+            <div class="screen" id="paymentScreen">
+                <div class="header">
+                    <div class="back-btn" onclick="showCartScreen()">‹</div>
+                    <div class="header-title">결제</div>
+                    <div style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); cursor: pointer;" onclick="showCartScreen()">×</div>
+                </div>
+                
+                <div style="padding: 20px; padding-bottom: 40px; height: calc(100vh - 100px); overflow-y: auto;">
+                    <!-- 주문 상품 요약 -->
+                    <div style="background: #f8f9fa; border-radius: 12px; padding: 15px; margin-bottom: 20px;">
+                        <div style="font-size: 16px; font-weight: 600; margin-bottom: 10px; color: #333;">주문 상품</div>
+                        <div id="paymentOrderSummary">
+                            <!-- 주문 상품 목록이 여기에 표시됩니다 -->
+                        </div>
+                        <div style="border-top: 1px solid #e9ecef; padding-top: 10px; margin-top: 10px;">
+                            <div style="display: flex; justify-content: between; font-size: 16px; font-weight: 600;">
+                                <span>총 주문금액</span>
+                                <span id="paymentOrderTotal" style="color: #ff6b6b;">0원</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 결제 수단 선택 -->
+                    <div style="margin-bottom: 25px;">
+                        <div style="font-size: 16px; font-weight: 600; margin-bottom: 15px; color: #333;">결제 수단</div>
+                        
+                        <div class="payment-method" onclick="selectPaymentMethod('card')" id="paymentCard">
+                            <div class="payment-method-icon">💳</div>
+                            <div class="payment-method-info">
+                                <div class="payment-method-name">신용/체크카드</div>
+                                <div class="payment-method-desc">간편하고 안전한 카드 결제</div>
+                            </div>
+                            <div class="payment-radio"></div>
+                        </div>
+                        
+                        <div class="payment-method" onclick="selectPaymentMethod('kakao')" id="paymentKakao">
+                            <div class="payment-method-icon">💛</div>
+                            <div class="payment-method-info">
+                                <div class="payment-method-name">카카오페이</div>
+                                <div class="payment-method-desc">간편 결제 서비스</div>
+                            </div>
+                            <div class="payment-radio"></div>
+                        </div>
+                        
+                        <div class="payment-method" onclick="selectPaymentMethod('naver')" id="paymentNaver">
+                            <div class="payment-method-icon">💚</div>
+                            <div class="payment-method-info">
+                                <div class="payment-method-name">네이버페이</div>
+                                <div class="payment-method-desc">네이버 간편 결제</div>
+                            </div>
+                            <div class="payment-radio"></div>
+                        </div>
+                        
+                        <div class="payment-method" onclick="selectPaymentMethod('samsung')" id="paymentSamsung">
+                            <div class="payment-method-icon">📱</div>
+                            <div class="payment-method-info">
+                                <div class="payment-method-name">삼성페이</div>
+                                <div class="payment-method-desc">삼성 간편 결제</div>
+                            </div>
+                            <div class="payment-radio"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 약관 동의 -->
+                    <div style="margin-bottom: 25px;">
+                        <div style="font-size: 16px; font-weight: 600; margin-bottom: 15px; color: #333;">약관 동의</div>
+                        
+                        <div class="terms-checkbox" onclick="toggleTermsAgreement('all')" id="termsAll">
+                            <input type="checkbox" id="checkboxAll">
+                            <span class="terms-text">전체 동의</span>
+                        </div>
+                        
+                        <div class="terms-checkbox" onclick="toggleTermsAgreement('purchase')" id="termsPurchase">
+                            <input type="checkbox" id="checkboxPurchase">
+                            <span class="terms-text">구매 조건 및 서비스 약관 동의 (필수)</span>
+                        </div>
+                        
+                        <div class="terms-checkbox" onclick="toggleTermsAgreement('privacy')" id="termsPrivacy">
+                            <input type="checkbox" id="checkboxPrivacy">
+                            <span class="terms-text">개인정보 제3자 제공 동의 (필수)</span>
+                        </div>
+                        
+                        <div class="terms-checkbox" onclick="toggleTermsAgreement('marketing')" id="termsMarketing">
+                            <input type="checkbox" id="checkboxMarketing">
+                            <span class="terms-text">마케팅 수신 동의 (선택)</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 최종 결제 금액 -->
+                    <div style="background: white; border: 1px solid #f0f0f0; border-radius: 12px; padding: 20px; margin-bottom: 25px;">
+                        <div style="font-size: 16px; font-weight: 600; margin-bottom: 15px; color: #333;">최종 결제 금액</div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px;">
+                            <span>상품 금액</span>
+                            <span id="paymentSubtotal">0원</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px; color: #666;">
+                            <span>적립 예정 포인트</span>
+                            <span id="paymentPoints">0P</span>
+                        </div>
+                        <div style="border-top: 1px solid #f0f0f0; padding-top: 15px; display: flex; justify-content: space-between; font-size: 20px; font-weight: 700;">
+                            <span>총 결제금액</span>
+                            <span id="paymentTotal" style="color: #ff6b6b;">0원</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 결제 버튼 -->
+                    <button id="finalPaymentBtn" onclick="processPayment()" disabled style="width: 100%; background: #ddd; color: #999; border: none; padding: 18px; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: not-allowed; margin-bottom: 20px;">
+                        결제 수단과 약관을 선택해 주세요
+                    </button>
+                    
+                    <!-- 주의사항 -->
+                    <div style="font-size: 12px; color: #666; line-height: 1.4; text-align: center;">
+                        잇츠미는 통신판매중개자로서 통신판매의 당사자가 아니며,<br>
+                        판매자가 등록한 상품 정보 및 거래에 대하여 책임을 지지 않습니다.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 알람 화면 (시계 스타일) -->
+            <div class="screen" id="alarmScreen">
+                <div class="clock-screen">
+                    <div class="clock-time">8:00</div>
+                    <div class="clock-date">2월(화) 23° 22°</div>
+                    
+                    <div class="alarm-notification">
+                        <div class="notification-icon">🍽️</div>
+                        <div class="notification-text">
+                            <strong>안녕! 득식, 칭찬서정석보!</strong><br>
+                            "오늘학사위원회 강서병명..."
+                        </div>
+                    </div>
+                    
+                    <div class="clock-controls">
+                        <button class="control-btn">💡</button>
+                        <button class="control-btn" onclick="showMenuNotification()">📷</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 오늘의 전체 메뉴 화면 -->
+            <div class="screen" id="todayMenuScreen">
+                <div class="header">
+                    <div class="back-btn" onclick="closeNotificationCenter()">‹</div>
+                    <div class="header-title">오늘의 메뉴</div>
+                    <div style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); cursor: pointer;" onclick="closeNotificationCenter()">×</div>
+                </div>
+                
+                <div style="padding: 20px; padding-bottom: 40px;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <div style="color: #ff6b6b; font-size: 18px; font-weight: 600; margin-bottom: 5px;">6월 5일 목요일</div>
+                        <div style="font-size: 14px; color: #666;">전북대 후생관 식당 전체 메뉴</div>
+                    </div>
+                    
+                    <!-- 카테고리별 메뉴 -->
+                    <div class="today-menu-category">
+                        <div class="category-header">
+                            <span class="category-number">①</span>
+                            <span class="category-name">조식/석식🍚</span>
+                            <span class="category-status closed">영업마감</span>
+                        </div>
+                        <div class="category-menu">
+                            <div class="menu-item-today">
+                                <span class="menu-name">천원의 아침(학생할인)</span>
+                                <span class="menu-price">1,000원</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="today-menu-category">
+                        <div class="category-header">
+                            <span class="category-number">②</span>
+                            <span class="category-name">찌개/돌솥🍲</span>
+                            <span class="category-status open">영업중</span>
+                        </div>
+                        <div class="category-menu">
+                            <div class="menu-item-today featured">
+                                <span class="menu-name">왕새우튀김들깨장밥*계란후라이</span>
+                                <span class="menu-price">5,000원</span>
+                                <span class="menu-badge">추천</span>
+                            </div>
+                            <div class="menu-item-today">
+                                <span class="menu-name">돈부리찌개</span>
+                                <span class="menu-price">4,500원</span>
+                            </div>
+                            <div class="menu-item-today">
+                                <span class="menu-name">김치찌개</span>
+                                <span class="menu-price">4,000원</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="today-menu-category">
+                        <div class="category-header">
+                            <span class="category-number">④</span>
+                            <span class="category-name">한식🍚</span>
+                            <span class="category-status open">영업중</span>
+                        </div>
+                        <div class="category-menu">
+                            <div class="menu-item-today">
+                                <span class="menu-name">참치김치볶음밥</span>
+                                <span class="menu-price">4,800원</span>
+                            </div>
+                            <div class="menu-item-today">
+                                <span class="menu-name">비빔밥</span>
+                                <span class="menu-price">4,300원</span>
+                            </div>
+                            <div class="menu-item-today">
+                                <span class="menu-name">돈불고기비빔밥</span>
+                                <span class="menu-price">4,800원</span>
+                            </div>
+                            <div class="menu-item-today">
+                                <span class="menu-name">주꾸미비빔밥</span>
+                                <span class="menu-price">5,800원</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="today-menu-category">
+                        <div class="category-header">
+                            <span class="category-number">⑤</span>
+                            <span class="category-name">양식🍝</span>
+                            <span class="category-status open">영업중</span>
+                        </div>
+                        <div class="category-menu">
+                            <div class="menu-item-today">
+                                <span class="menu-name">치즈듬뿍밥박*오므라이스</span>
+                                <span class="menu-price">6,000원</span>
+                            </div>
+                            <div class="menu-item-today">
+                                <span class="menu-name">모듬카츠(치킨,돈등심,왕새우)</span>
+                                <span class="menu-price">8,000원</span>
+                            </div>
+                            <div class="menu-item-today">
+                                <span class="menu-name">치킨까스</span>
+                                <span class="menu-price">6,000원</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="today-menu-category">
+                        <div class="category-header">
+                            <span class="category-number">⑥</span>
+                            <span class="category-name">분식🍜</span>
+                            <span class="category-status open">영업중</span>
+                        </div>
+                        <div class="category-menu">
+                            <div class="menu-item-today">
+                                <span class="menu-name">생협김밥</span>
+                                <span class="menu-price">3,000원</span>
+                            </div>
+                            <div class="menu-item-today">
+                                <span class="menu-name">참치마요김밥</span>
+                                <span class="menu-price">4,000원</span>
+                            </div>
+                            <div class="menu-item-today">
+                                <span class="menu-name">새우튀김우동</span>
+                                <span class="menu-price">4,000원</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cart = [];
+        let selectedItem = null;
+        let selectedPaymentMethod = null;
+        let termsAgreed = {
+            purchase: false,
+            privacy: false,
+            marketing: false
+        };
+        
+        // 전역 변수 초기화 - 알러지 정보 저장을 위한 변수
+        window.savedAllergies = null;
+        
+        // 페이지 히스토리 관리를 위한 변수
+        let previousScreen = 'mainScreen';
+        
+        // 식권 사용량/구매량 데이터
+        const ticketUsageData = {
+            categories: {
+                '조식/석식🍚': { used: 142, purchased: 180 },
+                '찌개/돌솥🍲': { used: 89, purchased: 120 },
+                '한식🍚': { used: 234, purchased: 280 },
+                '양식🍝 - 오므라이스': { used: 76, purchased: 95 },
+                '양식🍝 - 돈까스': { used: 156, purchased: 190 },
+                '분식🍜': { used: 198, purchased: 220 },
+                '라면・샐러드🥗': { used: 134, purchased: 160 }
+            },
+            menus: {
+                '참치김치볶음밥': { used: 45, purchased: 58 },
+                '비빔밥': { used: 67, purchased: 82 },
+                '돈불고기비빔밥': { used: 52, purchased: 65 },
+                '주꾸미비빔밥': { used: 38, purchased: 47 }
+            }
+        };
+        
+        // 카테고리별 메뉴 데이터
+        const categoryMenus = {
+            '조식/석식🍚': [
+                { name: '천원의 아침(학생할인)', price: 1000, emoji: '🍽️', soldOut: true },
+                { name: '천원의 아침(학생할인)', price: 1000, emoji: '🍽️', soldOut: true }
+            ],
+            '찌개/돌솥🍲': [
+                { name: '왕새우튀김들깨장밥*계란후라이', price: 5000, emoji: '🦐' },
+                { name: '돈부리찌개', price: 4500, emoji: '🍲' },
+                { name: '김치찌개', price: 4000, emoji: '🍲' }
+            ],
+            '한식🍚': [
+                { name: '참치김치볶음밥', price: 4800, emoji: '🍚' },
+                { name: '비빔밥', price: 4300, emoji: '🍛' },
+                { name: '돈불고기비빔밥', price: 4800, emoji: '🍛' },
+                { name: '주꾸미비빔밥', price: 5800, emoji: '🦑' }
+            ],
+            '양식🍝 - 오므라이스': [
+                { name: '치즈듬뿍밥박*오므라이스', price: 6000, emoji: '🍳' },
+                { name: '소시지 오므라이스(Sausage omelet)', price: 5500, emoji: '🌭' }
+            ],
+            '양식🍝 - 돈까스': [
+                { name: '모듬카츠(치킨,돈등심,왕새우)', price: 8000, emoji: '🍤' },
+                { name: '치킨까스(Chicken cutlet)', price: 6000, emoji: '🐔' },
+                { name: '순살등심돈까스(Pork cutlet)', price: 6000, emoji: '🐷' },
+                { name: '치즈돈까스(Cheese pork cutlet)', price: 6500, emoji: '🧀' },
+                { name: '고구마치즈돈까스(Sweet potato cheese pork cutlet)', price: 7500, emoji: '🍠' }
+            ],
+            '분식🍜': [
+                { name: '생협김밥(Korean seaweed Rice Rolls)', price: 3000, emoji: '🍙' },
+                { name: '치즈김밥(Korean seaweed Rolls with cheese)', price: 3500, emoji: '🧀' },
+                { name: '샐러드김밥(Korean seaweed Rice Rolls with salad)', price: 3800, emoji: '🥗' },
+                { name: '참치마요김밥(Korean seaweed Rice Rolls with Tuna)', price: 4000, emoji: '🐟' },
+                { name: '유부우동(Fried Bean Curd Udon)', price: 3000, emoji: '🍜' },
+                { name: '김치우동(Kimchi Udon)', price: 3500, emoji: '🌶️' },
+                { name: '꼬치우동(Fishcake Skewer Udon)', price: 3800, emoji: '🍢' },
+                { name: '새우튀김 우동(Deep-fried Shrimp Udon)', price: 4000, emoji: '🦐' },
+                { name: '김밥우동세트(Korean seaweed Rice Rolls&Udon)', price: 5500, emoji: '🍙' },
+                { name: '유부우동(곱빼기)A large serving of Fried Bean Curd Udon', price: 3500, emoji: '🍜' },
+                { name: '김치우동(곱빼기)a large serving of kimchi udon', price: 4000, emoji: '🌶️' },
+                { name: '꼬치우동(곱빼기)a large serving of skewers', price: 4300, emoji: '🍢' },
+                { name: '새우튀김우동(곱빼기)A large serving of Deep-fried Shrimp Udon', price: 4500, emoji: '🦐' }
+            ],
+            '라면・샐러드🥗': [
+                { name: '훈제오리샐러드', price: 5500, emoji: '🥗' },
+                { name: '계란라면(Noodles)', price: 3000, emoji: '🍜' },
+                { name: '치즈라면(Cheese Noodles)', price: 3500, emoji: '🧀' },
+                { name: '순두부열라면(Spicy Noodles with Soft tofu)', price: 3800, emoji: '🌶️' },
+                { name: '라면정식(Noodles*rice)', price: 3500, emoji: '🍜' },
+                { name: '라면김밥세트(Noodles*Korean Seaweed rice rolls)', price: 5500, emoji: '🍙' },
+                { name: '짜계치', price: 3500, emoji: '🥤' },
+                { name: '국물떡볶이(Stir-fried Spicy Rice Cake)', price: 3500, emoji: '🍘' },
+                { name: '삶은계란(1개)Boiled Eggs', price: 500, emoji: '🥚' },
+                { name: '공기밥(Steamed Rice)', price: 1000, emoji: '🍚' }
+            ]
+        };
+        
+        // 페이지 로드 시 알러지 상태 업데이트
+        document.addEventListener('DOMContentLoaded', function() {
+            enhanceBackButton();
+            updateAllergyStatus();
+        });
+        
+        // 결제 수단 선택 함수
+        function selectPaymentMethod(method) {
+            // 모든 결제 수단 선택 해제
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // 선택된 결제 수단 활성화
+            document.getElementById('payment' + method.charAt(0).toUpperCase() + method.slice(1)).classList.add('selected');
+            selectedPaymentMethod = method;
+            
+            updatePaymentButton();
+        }
+        
+        // 약관 동의 토글 함수
+        function toggleTermsAgreement(type) {
+            if (type === 'all') {
+                const allChecked = document.getElementById('checkboxAll').checked;
+                termsAgreed.purchase = !allChecked;
+                termsAgreed.privacy = !allChecked;
+                termsAgreed.marketing = !allChecked;
+                
+                document.getElementById('checkboxAll').checked = !allChecked;
+                document.getElementById('checkboxPurchase').checked = !allChecked;
+                document.getElementById('checkboxPrivacy').checked = !allChecked;
+                document.getElementById('checkboxMarketing').checked = !allChecked;
+            } else {
+                termsAgreed[type] = !termsAgreed[type];
+                document.getElementById('checkbox' + type.charAt(0).toUpperCase() + type.slice(1)).checked = termsAgreed[type];
+                
+                // 전체 동의 체크박스 상태 업데이트
+                const allAgreed = termsAgreed.purchase && termsAgreed.privacy && termsAgreed.marketing;
+                document.getElementById('checkboxAll').checked = allAgreed;
+            }
+            
+            updatePaymentButton();
+        }
+        
+        // 결제 버튼 상태 업데이트
+        function updatePaymentButton() {
+            const btn = document.getElementById('finalPaymentBtn');
+            const requiredTermsAgreed = termsAgreed.purchase && termsAgreed.privacy;
+            const canPay = selectedPaymentMethod && requiredTermsAgreed;
+            
+            if (canPay) {
+                btn.disabled = false;
+                btn.style.background = '#ff6b6b';
+                btn.style.color = 'white';
+                btn.style.cursor = 'pointer';
+                const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                btn.textContent = `${total.toLocaleString()}원 결제하기`;
+            } else {
+                btn.disabled = true;
+                btn.style.background = '#ddd';
+                btn.style.color = '#999';
+                btn.style.cursor = 'not-allowed';
+                btn.textContent = '결제 수단과 약관을 선택해 주세요';
+            }
+        }
+        
+        // 알러지 상태 업데이트 함수
+        function updateAllergyStatus() {
+            const allergyStatusElement = document.getElementById('allergyStatus');
+            if (window.savedAllergies === null) {
+                allergyStatusElement.textContent = '아직 설정되지 않음';
+                allergyStatusElement.style.color = '#999';
+            } else if (window.savedAllergies === false) {
+                allergyStatusElement.textContent = '✅ 알러지 없음';
+                allergyStatusElement.style.color = '#4CAF50';
+            } else if (Array.isArray(window.savedAllergies) && window.savedAllergies.length > 0) {
+                allergyStatusElement.textContent = `⚠️ 설정됨: ${window.savedAllergies.join(', ')}`;
+                allergyStatusElement.style.color = '#ff6b6b';
+            } else {
+                allergyStatusElement.textContent = '설정 오류';
+                allergyStatusElement.style.color = '#ff6b6b';
+            }
+        }
+        
+        // 메뉴별 상세 알러지 정보 데이터 (정식 알러지 기준 적용)
+        const menuAllergyInfo = {
+            // 조식/석식
+            '천원의 아침(학생할인)': ['난류(가금류)', '대두', '밀', '우유', '돼지고기'],
+            
+            // 찌개/돌솥
+            '왕새우튀김들깨장밥*계란후라이': ['새우', '난류(가금류)', '대두', '밀'],
+            '돈부리찌개': ['대두', '밀', '돼지고기'],
+            '김치찌개': ['대두', '밀', '돼지고기'],
+            
+            // 한식
+            '참치김치볶음밥': ['고등어', '대두', '밀'],
+            '비빔밥': ['대두', '밀', '난류(가금류)'],
+            '돈불고기비빔밥': ['대두', '밀', '돼지고기'],
+            '주꾸미비빔밥': ['대두', '밀'],
+            
+            // 양식 - 오므라이스
+            '치즈듬뿍밥박*오므라이스': ['난류(가금류)', '우유', '밀', '대두'],
+            '소시지 오므라이스(Sausage omelet)': ['난류(가금류)', '밀', '대두', '우유', '돼지고기'],
+            
+            // 양식 - 돈까스
+            '모듬카츠(치킨,돈등심,왕새우)': ['새우', '밀', '난류(가금류)', '대두', '돼지고기'],
+            '치킨까스(Chicken cutlet)': ['밀', '난류(가금류)', '대두'],
+            '순살등심돈까스(Pork cutlet)': ['밀', '난류(가금류)', '대두', '돼지고기'],
+            '치즈돈까스(Cheese pork cutlet)': ['밀', '난류(가금류)', '대두', '우유', '돼지고기'],
+            '고구마치즈돈까스(Sweet potato cheese pork cutlet)': ['밀', '난류(가금류)', '대두', '우유', '돼지고기'],
+            
+            // 분식
+            '생협김밥(Korean seaweed Rice Rolls)': ['난류(가금류)', '대두'],
+            '치즈김밥(Korean seaweed Rolls with cheese)': ['난류(가금류)', '대두', '우유'],
+            '샐러드김밥(Korean seaweed Rice Rolls with salad)': ['난류(가금류)', '대두'],
+            '참치마요김밥(Korean seaweed Rice Rolls with Tuna)': ['고등어', '난류(가금류)', '대두'],
+            '유부우동(Fried Bean Curd Udon)': ['대두', '밀'],
+            '김치우동(Kimchi Udon)': ['대두', '밀'],
+            '꼬치우동(Fishcake Skewer Udon)': ['고등어', '대두', '밀'],
+            '새우튀김 우동(Deep-fried Shrimp Udon)': ['새우', '대두', '밀', '난류(가금류)'],
+            '김밥우동세트(Korean seaweed Rice Rolls&Udon)': ['난류(가금류)', '대두', '밀'],
+            '유부우동(곱빼기)A large serving of Fried Bean Curd Udon': ['대두', '밀'],
+            '김치우동(곱빼기)a large serving of kimchi udon': ['대두', '밀'],
+            '꼬치우동(곱빼기)a large serving of skewers': ['고등어', '대두', '밀'],
+            '새우튀김우동(곱빼기)A large serving of Deep-fried Shrimp Udon': ['새우', '대두', '밀', '난류(가금류)'],
+            
+            // 라면・샐러드
+            '훈제오리샐러드': ['대두'],
+            '계란라면(Noodles)': ['난류(가금류)', '밀', '대두'],
+            '치즈라면(Cheese Noodles)': ['난류(가금류)', '밀', '대두', '우유'],
+            '순두부열라면(Spicy Noodles with Soft tofu)': ['대두', '밀'],
+            '라면정식(Noodles*rice)': ['난류(가금류)', '밀', '대두'],
+            '라면김밥세트(Noodles*Korean Seaweed rice rolls)': ['난류(가금류)', '밀', '대두'],
+            '짜계치': ['난류(가금류)', '밀', '대두'],
+            '국물떡볶이(Stir-fried Spicy Rice Cake)': ['밀', '대두'],
+            '삶은계란(1개)Boiled Eggs': ['난류(가금류)'],
+            '공기밥(Steamed Rice)': []
+        };
+        
+        // 메뉴 아이템 선택
+        function selectMenuItem(name, price) {
+            selectedItem = { name, price };
+            
+            // 알러지 체크
+            if (window.savedAllergies && Array.isArray(window.savedAllergies) && window.savedAllergies.length > 0) {
+                const menuAllergies = menuAllergyInfo[name] || [];
+                const userAllergies = window.savedAllergies;
+                const conflictingAllergies = menuAllergies.filter(allergy => userAllergies.includes(allergy));
+                
+                if (conflictingAllergies.length > 0) {
+                    showAllergyWarning(name, price, conflictingAllergies);
+                    return;
+                }
+            }
+            
+            showItemDetailPopup(name, price);
+        }
+        
+        // 알러지 경고 팝업 표시
+        function showAllergyWarning(name, price, allergies) {
+            // 기존 팝업이 있다면 제거
+            const existingPopup = document.getElementById('allergyWarningPopup');
+            if (existingPopup) {
+                existingPopup.remove();
+            }
+            
+            // 배경 오버레이 생성
+            const overlay = document.createElement('div');
+            overlay.id = 'allergyOverlay';
+            overlay.style.cssText = `
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.3);
+                z-index: 999;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            `;
+            
+            // 오버레이 클릭 시 팝업 닫기
+            overlay.addEventListener('click', closeAllergyWarning);
+            
+            const popup = document.createElement('div');
+            popup.id = 'allergyWarningPopup';
+            popup.style.cssText = `
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: white;
+                border-radius: 20px 20px 0 0;
+                box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
+                z-index: 1000;
+                transform: translateY(100%);
+                transition: transform 0.3s ease;
+            `;
+            
+            // 팝업 내부 클릭 시 이벤트 전파 방지
+            popup.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            popup.innerHTML = `
+                <div style="padding: 20px;">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <div style="width: 40px; height: 4px; background: #ddd; border-radius: 2px; margin: 0 auto;"></div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <div style="font-size: 48px; margin-bottom: 15px;">⚠️</div>
+                        <div style="font-size: 20px; font-weight: 600; color: #e74c3c; margin-bottom: 10px;">알러지 경고</div>
+                    </div>
+                    
+                    <div style="background: #fff5f5; border: 1px solid #fed7d7; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                        <div style="font-size: 16px; font-weight: 600; margin-bottom: 10px; color: #e74c3c;">
+                            "${name}"에 다음 알러지 성분이 포함되어 있습니다:
+                        </div>
+                        <div style="font-size: 18px; font-weight: 700; color: #c53030;">
+                            ${allergies.join(', ')}
+                        </div>
+                        <div style="font-size: 14px; color: #718096; margin-top: 10px;">
+                            이 메뉴는 귀하의 알러지 정보와 일치합니다. 주문 시 주의해 주세요.
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px;">
+                        <button onclick="closeAllergyWarning()" style="flex: 1; background: #f8f9fa; color: #333; border: 1px solid #ddd; padding: 15px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                            취소
+                        </button>
+                        <button onclick="proceedWithAllergyWarning('${name}', ${price})" style="flex: 1; background: #e74c3c; color: white; border: none; padding: 15px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                            알겠습니다. 계속 주문
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // 핸드폰 스크린 내부에 오버레이와 팝업 추가
+            document.querySelector('.phone-screen').appendChild(overlay);
+            document.querySelector('.phone-screen').appendChild(popup);
+            
+            // 애니메이션 효과
+            setTimeout(() => {
+                overlay.style.opacity = '1';
+                popup.style.transform = 'translateY(0)';
+            }, 10);
+        }
+        
+        // 알러지 경고 팝업 닫기
+        function closeAllergyWarning() {
+            const popup = document.getElementById('allergyWarningPopup');
+            const overlay = document.getElementById('allergyOverlay');
+            
+            if (popup && overlay) {
+                overlay.style.opacity = '0';
+                popup.style.transform = 'translateY(100%)';
+                setTimeout(() => {
+                    overlay.remove();
+                    popup.remove();
+                }, 300);
+            }
+        }
+        
+        // 알러지 경고를 확인하고 계속 진행
+        function proceedWithAllergyWarning(name, price) {
+            closeAllergyWarning();
+            showItemDetailPopup(name, price);
+        }
+        
+        // 아이템 상세 팝업 표시
+        function showItemDetailPopup(name, price) {
+            // 기존 팝업이 있다면 제거
+            const existingPopup = document.getElementById('itemDetailPopup');
+            if (existingPopup) {
+                existingPopup.remove();
+            }
+            
+            // 배경 오버레이 생성
+            const overlay = document.createElement('div');
+            overlay.id = 'popupOverlay';
+            overlay.style.cssText = `
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.3);
+                z-index: 999;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            `;
+            
+            // 오버레이 클릭 시 팝업 닫기
+            overlay.addEventListener('click', closeItemDetailPopup);
+            
+            const popup = document.createElement('div');
+            popup.id = 'itemDetailPopup';
+            popup.style.cssText = `
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: white;
+                border-radius: 20px 20px 0 0;
+                box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
+                z-index: 1000;
+                transform: translateY(100%);
+                transition: transform 0.3s ease;
+            `;
+            
+            // 팝업 내부 클릭 시 이벤트 전파 방지
+            popup.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            popup.innerHTML = `
+                <div style="padding: 20px;">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <div style="width: 40px; height: 4px; background: #ddd; border-radius: 2px; margin: 0 auto;"></div>
+                    </div>
+                    
+                    <div style="font-size: 20px; font-weight: 600; margin-bottom: 10px;">${name}</div>
+                    <div style="font-size: 18px; font-weight: 700; color: #ff6b6b; margin-bottom: 30px;">${price.toLocaleString()}원</div>
+                    
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 30px;">
+                        <button onclick="decreasePopupQuantity()" style="width: 40px; height: 40px; border: 1px solid #ddd; border-radius: 50%; background: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center;">-</button>
+                        <span style="font-size: 18px; font-weight: 600; min-width: 30px; text-align: center;" id="popupQuantity">1</span>
+                        <button onclick="increasePopupQuantity()" style="width: 40px; height: 40px; border: 1px solid #ddd; border-radius: 50%; background: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center;">+</button>
+                    </div>
+                    
+                    <div style="text-align: right; margin-bottom: 20px;">
+                        <div style="font-size: 14px; color: #666;">합계</div>
+                        <div style="font-size: 18px; font-weight: 700; color: #333;" id="popupTotal">${price.toLocaleString()}원</div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px;">
+                        <button onclick="closeItemDetailPopup()" style="flex: 1; background: #f8f9fa; color: #333; border: 1px solid #ddd; padding: 15px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">취소</button>
+                        <button onclick="addToCart()" style="flex: 2; background: #ff6b6b; color: white; border: none; padding: 15px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">바로 결제</button>
+                    </div>
+                </div>
+            `;
+            
+            // 핸드폰 스크린 내부에 오버레이와 팝업 추가
+            document.querySelector('.phone-screen').appendChild(overlay);
+            document.querySelector('.phone-screen').appendChild(popup);
+            
+            // 애니메이션 효과
+            setTimeout(() => {
+                overlay.style.opacity = '1';
+                popup.style.transform = 'translateY(0)';
+            }, 10);
+        }
+        
+        function closeItemDetailPopup() {
+            const popup = document.getElementById('itemDetailPopup');
+            const overlay = document.getElementById('popupOverlay');
+            
+            if (popup && overlay) {
+                overlay.style.opacity = '0';
+                popup.style.transform = 'translateY(100%)';
+                setTimeout(() => {
+                    overlay.remove();
+                    popup.remove();
+                }, 300);
+            }
+        }
+        
+        let popupQuantity = 1;
+        
+        function increasePopupQuantity() {
+            popupQuantity++;
+            updatePopupDisplay();
+        }
+        
+        function decreasePopupQuantity() {
+            if (popupQuantity > 1) {
+                popupQuantity--;
+                updatePopupDisplay();
+            }
+        }
+        
+        function updatePopupDisplay() {
+            document.getElementById('popupQuantity').textContent = popupQuantity;
+            const total = selectedItem.price * popupQuantity;
+            document.getElementById('popupTotal').textContent = total.toLocaleString() + '원';
+        }
+        
+        function addToCart() {
+            const existingItem = cart.find(item => item.name === selectedItem.name);
+            
+            if (existingItem) {
+                existingItem.quantity += popupQuantity;
+            } else {
+                cart.push({
+                    name: selectedItem.name,
+                    price: selectedItem.price,
+                    quantity: popupQuantity
+                });
+            }
+            
+            updateCartDisplay();
+            closeItemDetailPopup();
+            showCartScreen();
+            popupQuantity = 1;
+        }
+        
+        function updateCartDisplay() {
+            const cartItems = document.getElementById('cartItems');
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<div style="text-align: center; color: #999; padding: 40px;">장바구니가 비어있습니다.</div>';
+                return;
+            }
+            
+            // 장바구니 아이템 목록 생성
+            cartItems.innerHTML = cart.map(item => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #f0f0f0;">
+                    <div style="flex: 1;">
+                        <div style="font-size: 16px; font-weight: 600; margin-bottom: 5px;">${item.name}</div>
+                        <div style="font-size: 16px; font-weight: 700; color: #ff6b6b;">${item.price.toLocaleString()}원</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button onclick="decreaseCartItem('${item.name}')" style="width: 30px; height: 30px; border: 1px solid #ddd; border-radius: 50%; background: white; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;">-</button>
+                        <span style="font-size: 16px; min-width: 20px; text-align: center;">${item.quantity}</span>
+                        <button onclick="increaseCartItem('${item.name}')" style="width: 30px; height: 30px; border: 1px solid #ddd; border-radius: 50%; background: white; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;">+</button>
+                        <button onclick="removeCartItem('${item.name}')" style="color: #999; background: none; border: none; font-size: 18px; cursor: pointer; margin-left: 5px;">×</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            updateCartTotals();
+        }
+        
+        function updateCartTotals() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const points = Math.floor(subtotal * 0.01);
+            
+            // 장바구니 화면 업데이트
+            document.getElementById('cartSubtotal').textContent = subtotal.toLocaleString() + '원';
+            document.getElementById('cartPoints').textContent = points + 'P';
+            document.getElementById('cartTotal').textContent = subtotal.toLocaleString() + '원';
+            document.getElementById('cartTotalBtn').textContent = subtotal.toLocaleString() + '원';
+            
+            // 결제 화면 업데이트
+            document.getElementById('paymentSubtotal').textContent = subtotal.toLocaleString() + '원';
+            document.getElementById('paymentPoints').textContent = points + 'P';
+            document.getElementById('paymentTotal').textContent = subtotal.toLocaleString() + '원';
+            document.getElementById('paymentOrderTotal').textContent = subtotal.toLocaleString() + '원';
+            
+            // 주문 상품 요약 업데이트
+            updatePaymentOrderSummary();
+            
+            // 결제 버튼 업데이트
+            updatePaymentButton();
+        }
+        
+        function updatePaymentOrderSummary() {
+            const paymentOrderSummary = document.getElementById('paymentOrderSummary');
+            if (cart.length === 0) {
+                paymentOrderSummary.innerHTML = '<div style="color: #999;">주문한 상품이 없습니다.</div>';
+                return;
+            }
+            
+            paymentOrderSummary.innerHTML = cart.map(item => `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div style="flex: 1;">
+                        <div style="font-size: 14px; font-weight: 600; color: #333;">${item.name}</div>
+                        <div style="font-size: 12px; color: #666;">${item.price.toLocaleString()}원 × ${item.quantity}개</div>
+                    </div>
+                    <div style="font-size: 14px; font-weight: 600; color: #ff6b6b;">
+                        ${(item.price * item.quantity).toLocaleString()}원
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function increaseCartItem(name) {
+            const item = cart.find(item => item.name === name);
+            if (item) {
+                item.quantity++;
+                updateCartDisplay();
+            }
+        }
+        
+        function decreaseCartItem(name) {
+            const item = cart.find(item => item.name === name);
+            if (item && item.quantity > 1) {
+                item.quantity--;
+                updateCartDisplay();
+            }
+        }
+        
+        function removeCartItem(name) {
+            cart = cart.filter(item => item.name !== name);
+            updateCartDisplay();
+        }
+        
+        function showCartScreen() {
+            const currentScreen = document.querySelector('.screen.active').id;
+            showScreen('cartScreen', currentScreen);
+            updateCartDisplay();
+        }
+        
+        function showPaymentScreen() {
+            const currentScreen = document.querySelector('.screen.active').id;
+            showScreen('paymentScreen', currentScreen);
+            updateCartTotals();
+            
+            // 결제 화면 초기화
+            selectedPaymentMethod = null;
+            termsAgreed = { purchase: false, privacy: false, marketing: false };
+            
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            document.querySelectorAll('input[type="checkbox"]').forEach(el => {
+                el.checked = false;
+            });
+            
+            updatePaymentButton();
+        }
+        
+        function processPayment() {
+            if (!selectedPaymentMethod || !termsAgreed.purchase || !termsAgreed.privacy) {
+                alert('결제 수단을 선택하고 필수 약관에 동의해주세요.');
+                return;
+            }
+            
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            alert(`${total.toLocaleString()}원 결제가 완료되었습니다!`);
+            cart = [];
+            updateCartDisplay();
+            showMainScreen();
+        }
+        
+        // 현재 시간 표시
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ko-KR', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+            document.getElementById('currentTime').textContent = timeString;
+        }
+        
+        updateTime();
+        setInterval(updateTime, 1000);
+        
+        // 화면 전환 함수들
+        function showScreen(screenId, fromScreen = null) {
+            // 이전 화면 정보 저장
+            if (fromScreen) {
+                previousScreen = fromScreen;
+            }
+            
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+            
+            // 네비게이션 활성화 상태 변경
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+        }
+        
+        function showMainScreen() {
+            showScreen('mainScreen');
+            previousScreen = 'mainScreen';
+            updateAllergyStatus(); // 메인 화면으로 돌아갈 때 알러지 상태 업데이트
+        }
+        
+        // 카테고리별 메뉴 표시 함수
+        function showCategoryMenu(categoryName) {
+            const currentScreen = document.querySelector('.screen.active').id;
+            showScreen('congestionScreen', currentScreen);
+            
+            // 메뉴 컨테이너만 업데이트 (카테고리 제목 제거)
+            const menuContainer = document.getElementById('menuContainer');
+            
+            // 해당 카테고리의 메뉴 가져오기
+            const menus = categoryMenus[categoryName] || [];
+            
+            // 메뉴 컨테이너 초기화 및 메뉴 생성
+            menuContainer.innerHTML = '';
+            
+            if (menus.length <= 2) {
+                // 메뉴가 2개 이하면 그리드 형태로 표시
+                const menuGrid = document.createElement('div');
+                menuGrid.className = 'menu-grid';
+                
+                menus.forEach(menu => {
+                    const menuCard = createMenuCard(menu);
+                    menuGrid.appendChild(menuCard);
+                });
+                
+                menuContainer.appendChild(menuGrid);
+            } else {
+                // 메뉴가 많으면 리스트 형태로 표시
+                menus.forEach(menu => {
+                    const menuItem = createMenuListItem(menu);
+                    menuContainer.appendChild(menuItem);
+                });
+            }
+        }
+        
+        // 메뉴 카드 생성 함수
+        function createMenuCard(menu) {
+            const menuCard = document.createElement('div');
+            menuCard.className = 'menu-card';
+            
+            if (menu.soldOut) {
+                menuCard.style.opacity = '0.6';
+                menuCard.style.position = 'relative';
+            }
+            
+            menuCard.onclick = menu.soldOut ? null : () => selectMenuItem(menu.name, menu.price);
+            
+            menuCard.innerHTML = `
+                <div class="menu-image">${menu.emoji}</div>
+                <div class="menu-card-content">
+                    <div class="menu-card-title">${menu.name}</div>
+                    <div class="menu-card-price">${menu.price.toLocaleString()}원</div>
+                    ${getMenuTicketInfo(menu.name)}
+                </div>
+                ${menu.soldOut ? '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600;">주문불가</div>' : ''}
+            `;
+            
+            return menuCard;
+        }
+        
+        // 메뉴 리스트 아이템 생성 함수
+        function createMenuListItem(menu) {
+            const menuItem = document.createElement('div');
+            menuItem.style.cssText = `
+                background: white;
+                border-radius: 12px;
+                padding: 15px;
+                margin-bottom: 15px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                cursor: ${menu.soldOut ? 'not-allowed' : 'pointer'};
+                opacity: ${menu.soldOut ? '0.6' : '1'};
+                position: relative;
+            `;
+            
+            if (!menu.soldOut) {
+                menuItem.onclick = () => selectMenuItem(menu.name, menu.price);
+            }
+            
+            menuItem.innerHTML = `
+                <div style="flex: 1;">
+                    <div style="font-size: 16px; font-weight: 600; color: #333; margin-bottom: 5px;">${menu.name}</div>
+                    <div style="font-size: 16px; font-weight: 700; color: #e74c3c; margin-bottom: 8px;">${menu.price.toLocaleString()}원</div>
+                    ${getMenuTicketInfo(menu.name)}
+                </div>
+                <div style="font-size: 40px; margin-left: 15px;">${menu.emoji}</div>
+                ${menu.soldOut ? '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600;">주문불가</div>' : ''}
+            `;
+            
+            return menuItem;
+        }
+        
+        // 메뉴별 식권 정보 가져오기 함수
+        function getMenuTicketInfo(menuName) {
+            const menuData = ticketUsageData.menus[menuName];
+            if (menuData) {
+                return `
+                    <div style="display: flex; gap: 8px; margin-top: 8px; font-size: 10px;">
+                        <span style="background: #e3f2fd; color: #1976d2; padding: 2px 4px; border-radius: 6px;">🎫 ${menuData.used}장</span>
+                        <span style="background: #f3e5f5; color: #7b1fa2; padding: 2px 4px; border-radius: 6px;">💳 ${menuData.purchased}장</span>
+                    </div>
+                `;
+            }
+            return '';
+        }
+        
+        function showCongestionScreen() {
+            // 기본적으로 한식 메뉴를 보여줌
+            showCategoryMenu('한식🍚');
+        }
+        
+        function showAlarmScreen() {
+            const currentScreen = document.querySelector('.screen.active').id;
+            showScreen('alarmScreen', currentScreen);
+        }
+        
+        function showCouponScreen() {
+            const currentScreen = document.querySelector('.screen.active').id;
+            showScreen('couponScreen', currentScreen);
+        }
+        
+        function showOrderHistoryScreen() {
+            const currentScreen = document.querySelector('.screen.active').id;
+            showScreen('orderHistoryScreen', currentScreen);
+        }
+        
+        // 알림 센터 토글 함수
+        function toggleNotificationCenter() {
+            const notificationCenter = document.getElementById('notificationCenter');
+            notificationCenter.classList.toggle('active');
+        }
+        
+        // 알림 센터 닫기
+        function closeNotificationCenter() {
+            const notificationCenter = document.getElementById('notificationCenter');
+            notificationCenter.classList.remove('active');
+            showMainScreen();
+        }
+        
+        // 오늘의 메뉴 화면 열기
+        function openTodayMenu() {
+            const notificationCenter = document.getElementById('notificationCenter');
+            notificationCenter.classList.remove('active');
+            showScreen('todayMenuScreen');
+        }
+        
+        // 알림 개별 닫기
+        function closeNotification(element) {
+            element.closest('.notification-item').style.display = 'none';
+        }
+        
+        // 이전 페이지로 돌아가는 함수 (팝업 체크 포함)
+        function goBack() {
+            // 팝업이 열려있는지 확인하고 먼저 닫기
+            const itemPopup = document.getElementById('itemDetailPopup');
+            const allergyPopup = document.getElementById('allergyWarningPopup');
+            
+            if (itemPopup || allergyPopup) {
+                closeItemDetailPopup();
+                closeAllergyWarning();
+                return;
+            }
+            
+            // 팝업이 없으면 정상적인 뒤로가기
+            if (previousScreen) {
+                showScreen(previousScreen);
+            } else {
+                showMainScreen();
+            }
+        }
+        
+        // 뒤로가기 버튼들에 팝업 체크 로직 추가
+        function enhanceBackButton() {
+            // 모든 뒤로가기 버튼에 이벤트 리스너 추가
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('back-btn')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // 팝업이 열려있는지 확인
+                    const itemPopup = document.getElementById('itemDetailPopup');
+                    const allergyPopup = document.getElementById('allergyWarningPopup');
+                    
+                    if (itemPopup || allergyPopup) {
+                        closeItemDetailPopup();
+                        closeAllergyWarning();
+                        return;
+                    }
+                    
+                    // 특정 화면별 뒤로가기 처리
+                    const currentScreen = document.querySelector('.screen.active').id;
+                    
+                    switch(currentScreen) {
+                        case 'congestionScreen':
+                            showMainScreen();
+                            break;
+                        case 'cartScreen':
+                            showCongestionScreen();
+                            break;
+                        case 'paymentScreen':
+                            showCartScreen();
+                            break;
+                        case 'alarmScreen':
+                            showMainScreen();
+                            break;
+                        case 'menuNotificationScreen':
+                            showAlarmScreen();
+                            break;
+                        default:
+                            if (previousScreen) {
+                                showScreen(previousScreen);
+                            } else {
+                                showMainScreen();
+                            }
+                    }
+                }
+            });
+        }
+        
+        // 페이지 로드 시 뒤로가기 버튼 기능 활성화
+        document.addEventListener('DOMContentLoaded', function() {
+            enhanceBackButton();
+            updateAllergyStatus();
+        });
+        
+        // 주문 내역 탭 전환
+        function switchOrderTab(tabNumber) {
+            const tab1 = document.getElementById('orderTab1');
+            const tab2 = document.getElementById('orderTab2');
+            const content1 = document.getElementById('orderContent1');
+            const content2 = document.getElementById('orderContent2');
+            
+            if (tabNumber === 1) {
+                // 진행중 탭
+                tab1.style.borderBottom = '3px solid #333';
+                tab1.style.fontWeight = '600';
+                tab1.style.color = '#333';
+                
+                tab2.style.borderBottom = '1px solid #f0f0f0';
+                tab2.style.fontWeight = 'normal';
+                tab2.style.color = '#999';
+                
+                content1.style.display = 'block';
+                content2.style.display = 'none';
+            } else {
+                // 전체 내역 탭
+                tab2.style.borderBottom = '3px solid #333';
+                tab2.style.fontWeight = '600';
+                tab2.style.color = '#333';
+                
+                tab1.style.borderBottom = '1px solid #f0f0f0';
+                tab1.style.fontWeight = 'normal';
+                tab1.style.color = '#999';
+                
+                content1.style.display = 'none';
+                content2.style.display = 'block';
+            }
+        }
+        
+        // 교환권/쿠폰 탭 전환
+        function switchCouponTab(tabNumber) {
+            const tab1 = document.getElementById('couponTab1');
+            const tab2 = document.getElementById('couponTab2');
+            const content1 = document.getElementById('couponContent1');
+            const content2 = document.getElementById('couponContent2');
+            
+            if (tabNumber === 1) {
+                // 교환권 탭
+                tab1.style.borderBottom = '3px solid #333';
+                tab1.style.fontWeight = '600';
+                tab1.style.color = '#333';
+                
+                tab2.style.borderBottom = '1px solid #f0f0f0';
+                tab2.style.fontWeight = 'normal';
+                tab2.style.color = '#999';
+                
+                content1.style.display = 'block';
+                content2.style.display = 'none';
+            } else {
+                // 쿠폰 탭
+                tab2.style.borderBottom = '3px solid #333';
+                tab2.style.fontWeight = '600';
+                tab2.style.color = '#333';
+                
+                tab1.style.borderBottom = '1px solid #f0f0f0';
+                tab1.style.fontWeight = 'normal';
+                tab1.style.color = '#999';
+                
+                content1.style.display = 'none';
+                content2.style.display = 'block';
+            }
+        }
+        
+        // 알러지 정보 화면
+        function showAllergyScreen() {
+            // 기존 알러지 화면이 있다면 제거
+            const existingScreen = document.getElementById('allergyScreen');
+            if (existingScreen) {
+                existingScreen.remove();
+            }
+            
+            // 알러지 정보 화면을 동적으로 생성
+            const allergyScreen = document.createElement('div');
+            allergyScreen.className = 'screen active';
+            allergyScreen.id = 'allergyScreen';
+            allergyScreen.innerHTML = `
+                <div class="header">
+                    <div class="back-btn" onclick="closeAllergyScreen()">‹</div>
+                    <div class="header-title">알러지가 있으십니까?</div>
+                </div>
+                
+                <div style="padding: 40px 20px; text-align: center;">
+                    <div style="font-size: 24px; margin-bottom: 50px; color: #333;">
+                        알러지가 있으십니까?
+                    </div>
+                    
+                    <div style="display: flex; gap: 30px; justify-content: center; margin-bottom: 50px;">
+                        <button onclick="selectAllergy(true)" style="
+                            background: #ff6b6b; 
+                            color: white; 
+                            border: none; 
+                            padding: 20px 40px; 
+                            border-radius: 12px; 
+                            font-size: 18px; 
+                            font-weight: 600;
+                            cursor: pointer;
+                        ">예</button>
+                        
+                        <button onclick="selectAllergy(false)" style="
+                            background: #f8f9fa; 
+                            color: #333; 
+                            border: 1px solid #ddd; 
+                            padding: 20px 40px; 
+                            border-radius: 12px; 
+                            font-size: 18px; 
+                            font-weight: 600;
+                            cursor: pointer;
+                        ">아니요</button>
+                    </div>
+                    
+                    <div id="allergyDetails" style="display: none;">
+                        <div style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: left;">
+                            <div style="font-size: 16px; font-weight: 600; margin-bottom: 15px;">알러지 정보를 선택해주세요.</div>
+                            
+                            <div class="allergy-item">
+                                <label style="display: flex; align-items: center; padding: 10px 0; cursor: pointer;">
+                                    <input type="checkbox" style="margin-right: 10px; transform: scale(1.2);" value="난류(가금류)">
+                                    <span>①난류(가금류) - 달걀, 닭고기 등</span>
+                                </label>
+                            </div>
+                            
+                            <div class="allergy-item">
+                                <label style="display: flex; align-items: center; padding: 10px 0; cursor: pointer;">
+                                    <input type="checkbox" style="margin-right: 10px; transform: scale(1.2);" value="우유">
+                                    <span>②우유 - 우유, 치즈, 버터 등</span>
+                                </label>
+                            </div>
+                            
+                            <div class="allergy-item">
+                                <label style="display: flex; align-items: center; padding: 10px 0; cursor: pointer;">
+                                    <input type="checkbox" style="margin-right: 10px; transform: scale(1.2);" value="메밀">
+                                    <span>③메밀 - 메밀면, 메밀가루 등</span>
+                                </label>
+                            </div>
+                            
+                            <div class="allergy-item">
+                                <label style="display: flex; align-items: center; padding: 10px 0; cursor: pointer;">
+                                    <input type="checkbox" style="margin-right: 10px; transform: scale(1.2);" value="땅콩">
+                                    <span>④땅콩 - 땅콩, 땅콩버터 등</span>
+                                </label>
+                            </div>
+                            
+                            <div class="allergy-item">
+                                <label style="display: flex; align-items: center; padding: 10px 0; cursor: pointer;">
+                                    <input type="checkbox" style="margin-right: 10px; transform: scale(1.2);" value="대두">
+                                    <span>⑤대두 - 콩, 된장, 간장, 두부 등</span>
+                                </label>
+                            </div>
+                            
+                            <div class="allergy-item">
+                                <label style="display: flex; align-items: center; padding: 10px 0; cursor: pointer;">
+                                    <input type="checkbox" style="margin-right: 10px; transform: scale(1.2);" value="밀">
+                                    <span>⑥밀 - 밀가루, 면류, 빵 등</span>
+                                </label>
+                            </div>
+                            
+                            <div class="allergy-item">
+                                <label style="display: flex; align-items: center; padding: 10px 0; cursor: pointer;">
+                                    <input type="checkbox" style="margin-right: 10px; transform: scale(1.2);" value="고등어">
+                                    <span>⑦고등어 - 고등어, 참치, 어묵 등</span>
+                                </label>
+                            </div>
+                            
+                            <div class="allergy-item">
+                                <label style="display: flex; align-items: center; padding: 10px 0; cursor: pointer;">
+                                    <input type="checkbox" style="margin-right: 10px; transform: scale(1.2);" value="게">
+                                    <span>⑧게 - 게, 게살 등</span>
+                                </label>
+                            </div>
+                            
+                            <div class="allergy-item">
+                                <label style="display: flex; align-items: center; padding: 10px 0; cursor: pointer;">
+                                    <input type="checkbox" style="margin-right: 10px; transform: scale(1.2);" value="새우">
+                                    <span>⑨새우 - 새우, 새우젓 등</span>
+                                </label>
+                            </div>
+                            
+                            <div class="allergy-item">
+                                <label style="display: flex; align-items: center; padding: 10px 0; cursor: pointer;">
+                                    <input type="checkbox" style="margin-right: 10px; transform: scale(1.2);" value="돼지고기">
+                                    <span>⑩돼지고기 - 돼지고기, 베이컨, 햄 등</span>
+                                </label>
+                            </div>
+                            
+                            <div class="allergy-item">
+                                <label style="display: flex; align-items: center; padding: 10px 0; cursor: pointer;">
+                                    <input type="checkbox" style="margin-right: 10px; transform: scale(1.2);" value="복숭아">
+                                    <span>⑪복숭아 - 복숭아, 복숭아 주스 등</span>
+                                </label>
+                            </div>
+                            
+                            <div class="allergy-item">
+                                <label style="display: flex; align-items: center; padding: 10px 0; cursor: pointer;">
+                                    <input type="checkbox" style="margin-right: 10px; transform: scale(1.2);" value="토마토">
+                                    <span>⑫토마토 - 토마토, 토마토소스 등</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button onclick="saveAllergyInfo()" style="
+                            width: 100%; 
+                            background: #667eea; 
+                            color: white; 
+                            border: none; 
+                            padding: 15px; 
+                            border-radius: 8px; 
+                            font-size: 16px; 
+                            font-weight: 600;
+                            cursor: pointer;
+                        ">저장</button>
+                    </div>
+                    
+                    <div id="noAllergyMessage" style="display: none;">
+                        <div style="background: #e8f5e8; border: 1px solid #4CAF50; border-radius: 12px; padding: 20px; color: #2e7d32;">
+                            <div style="font-size: 18px; font-weight: 600; margin-bottom: 10px;">✅ 좋습니다!</div>
+                            <div>알러지가 없으시군요. 모든 메뉴를 안전하게 드실 수 있습니다.</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 기존 화면 숨기고 새 화면 표시
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            document.querySelector('.phone-screen').appendChild(allergyScreen);
+        }
+        
+        function selectAllergy(hasAllergy) {
+            const allergyDetails = document.getElementById('allergyDetails');
+            const noAllergyMessage = document.getElementById('noAllergyMessage');
+            
+            if (hasAllergy) {
+                allergyDetails.style.display = 'block';
+                noAllergyMessage.style.display = 'none';
+            } else {
+                allergyDetails.style.display = 'none';
+                noAllergyMessage.style.display = 'block';
+                
+                // 알러지 없음으로 저장
+                window.savedAllergies = false;
+                
+                // 3초 후 자동으로 메인 화면으로 돌아가기
+                setTimeout(() => {
+                    closeAllergyScreen();
+                }, 3000);
+            }
+        }
+        
+        function saveAllergyInfo() {
+            const checkedAllergies = document.querySelectorAll('#allergyDetails input[type="checkbox"]:checked');
+            const allergyList = Array.from(checkedAllergies).map(input => input.value);
+            
+            if (allergyList.length > 0) {
+                // 선택된 알러지 정보를 전역 변수에 저장
+                window.savedAllergies = allergyList;
+                alert(`선택된 알러지 정보: ${allergyList.join(', ')}\n\n해당 성분이 포함된 메뉴는 필터링됩니다.`);
+            } else {
+                alert('알러지 정보가 선택되지 않았습니다.');
+                return;
+            }
+            
+            closeAllergyScreen();
+        }
+        
+        function closeAllergyScreen() {
+            const allergyScreen = document.getElementById('allergyScreen');
+            if (allergyScreen) {
+                allergyScreen.remove();
+            }
+            showMainScreen();
+        }
+        
+        // 혼잡도 실시간 업데이트
+        function updateCongestionData() {
+            const congestionLevels = [
+                { current: 192, max: 210, percentage: 91, level: '혼잡', color: '#ff6b6b' },
+                { current: 125, max: 210, percentage: 59, level: '보통', color: '#FFC107' },
+                { current: 87, max: 210, percentage: 41, level: '여유', color: '#4CAF50' },
+                { current: 156, max: 210, percentage: 74, level: '혼잡', color: '#ff6b6b' },
+                { current: 98, max: 210, percentage: 47, level: '여유', color: '#4CAF50' }
+            ];
+            
+            const randomData = congestionLevels[Math.floor(Math.random() * congestionLevels.length)];
+            
+            // 현재 혼잡도 정보 업데이트
+            const currentCongestionElement = document.getElementById('currentCongestion');
+            const congestionBarElement = document.getElementById('congestionBar');
+            const congestionLevelElement = document.getElementById('congestionLevel');
+            
+            if (currentCongestionElement) {
+                currentCongestionElement.textContent = `${randomData.current}/${randomData.max}`;
+            }
+            
+            if (congestionBarElement) {
+                congestionBarElement.style.width = `${randomData.percentage}%`;
+            }
+            
+            if (congestionLevelElement) {
+                congestionLevelElement.textContent = `${randomData.percentage}%`;
+                congestionLevelElement.style.color = randomData.color;
+                congestionLevelElement.nextElementSibling.textContent = randomData.level;
+            }
+        }
+        
+        // 10초마다 혼잡도 업데이트
+        setInterval(updateCongestionData, 10000);
+        
+        // 초기 로드 시 실행
+        updateCongestionData();
+    </script>
+</body>
+</html>
