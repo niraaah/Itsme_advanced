@@ -849,6 +849,32 @@
             font-size: 10px;
             font-weight: 600;
         }
+        /* 모바일 환경에서는 폰 목업 제거하고 화면만 표시 */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 0;
+                background: #fff;
+            }
+            
+            .phone-container {
+                width: 100vw;
+                height: 100vh;
+                background: none;
+                border-radius: 0;
+                padding: 0;
+                box-shadow: none;
+            }
+            
+            .phone-screen {
+                border-radius: 0;
+            }
+            
+            .status-bar {
+                background: #000;
+                color: #fff;
+            }
+        }
+        
     </style>
 </head>
 <body>
